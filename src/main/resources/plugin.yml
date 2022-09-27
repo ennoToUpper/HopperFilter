@@ -1,0 +1,4 @@
+name: HopperFilter
+version: '${project.version}'
+main: ennotoupper.hopperfilter.HopperFilter
+api-version: 1.19

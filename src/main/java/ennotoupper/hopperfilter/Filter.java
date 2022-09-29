@@ -8,29 +8,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import static ennotoupper.hopperfilter.FilterUtility.*;
+
 public class Filter {
 
     public boolean isItemAllowedInHopper(ItemStack item)
     {
         if(!isFilterSet()) return true;
 
-        List<Tag<Material>> tagFromItem = FilterUtility.GetAllTags(item);
+        List<Tag<Material>> tagFromItem = GetAllTags(item);
 
-        ItemFilterPair strongestFilter = new ItemFilterPair(FilterTypes.None, null);
+        return CheckIfInFilters(tagFromItem);
+    }
 
-        for (ItemFilterPair itemFilter: itemFilterPairs) {
-            int i = tagFromItem.indexOf(itemFilter.tag);
-            if( i == -1) continue;
+    private boolean CheckIfInFilters(List<Tag<Material>> tagFromItem)
+    {
+        boolean allowFilterSet  = false;
+        boolean rejectFilterSet = false;
 
-            //DEF - NORTH > 0
-            //255 - 0 > 0 => stronger Filter
-            if(strongestFilter.getValue() - itemFilter.getValue() > 0 )
-            {
-                strongestFilter = itemFilter;
+        for (Tag<Material> tag : tagFromItem) {
+            ItemFilterPair result = TraverseList(tag);
+            if(result == null) continue;
+
+            if(result.isReject) {
+                rejectFilterSet = true;
+            } else {
+                allowFilterSet = true;
             }
         }
 
-        return !strongestFilter.isReject;
+        return allowFilterSet && !rejectFilterSet;
+    }
+
+    private ItemFilterPair TraverseList(Tag<Material> tag) {
+        for (ItemFilterPair itemPair : itemFilterPairs)
+        {
+            if(itemPair.tag.equals(tag))
+            {
+                return itemPair;
+            }
+        }
+        return null;
     }
 
     private boolean isFilterSet()
@@ -42,12 +60,13 @@ public class Filter {
 
     public void AddSetting(FilterTypes filterType, ItemStack item, boolean isReject)
     {
-        ItemFilterPair itemPair =
-                new ItemFilterPair(filterType, FilterUtility.GetTagBySetting(filterType, item), isReject);
+        Tag<Material> tag = GetTagBySetting(filterType, item);
+        if(tag == null) return;
+        ItemFilterPair itemPair = new ItemFilterPair(filterType, tag, isReject);
         AddSettingWithTag(itemPair);
     }
 
-    protected void AddSettingWithTag(ItemFilterPair itemPair)
+    private void AddSettingWithTag(ItemFilterPair itemPair)
     {
         AddByHierarchy(itemPair);
     }
@@ -57,7 +76,6 @@ public class Filter {
         boolean searching = true;
 
         FilterTypes filterTypeIn = itemPairIn.type;
-
         ListIterator<ItemFilterPair> iterator = itemFilterPairs.listIterator(0);
 
         if(itemFilterPairs.size() == 0)
@@ -67,13 +85,11 @@ public class Filter {
         }
 
         ItemFilterPair current = itemFilterPairs.get(0);
-        int count = 0;
         boolean isReversed = false;
 
         //Adding filterTypeIn to the correct position according to it's hierarchy
         while (searching)
         {
-            count++;
             FilterTypes currentType = current.type;
             int result = currentType.compareTo(filterTypeIn);
             result = itemPairIn.isReject ? result + 1 : result;
@@ -107,15 +123,11 @@ public class Filter {
 
                 itemFilterPairs.add(0, itemPairIn);
                 return;
-            } //filterTypeIn is equally important as the current filter type
+            }
+            //filterTypeIn is equally important as the current filter type
             else {
                 itemFilterPairs.add(position, itemPairIn);
                 searching = false;
-            }
-
-            if(count > 1000)
-            {
-                count = 0;
             }
         }
     }

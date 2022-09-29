@@ -26,14 +26,12 @@ public class FilterLogic {
             if (!(entity instanceof ItemFrame frame)) continue;
 
             ItemStack item = frame.getItem();
-
             if (item.getType().equals(Material.AIR)) continue;
-
             Block attachedBlock = frame.getLocation().getBlock().getRelative(frame.getAttachedFace());
 
             if (block.equals(attachedBlock)) {
                 FilterTypes filterSetting = GetFilterType(frame.getRotation());
-                filter.AddSetting(filterSetting, item, frame instanceof GlowItemFrame);
+                filter.AddSetting(filterSetting, item, entity instanceof GlowItemFrame);
             }
         }
         return filter;

@@ -9,10 +9,10 @@ import java.util.List;
 public class FilterUtility {
     public static Tag<Material> GetTagBySetting(FilterTypes filterTypes, ItemStack item) {
         List<Tag<Material>> itemTags = ItemTagUtility.getItemTags(item);
-        if(itemTags.size()==0) return  CustomTag.Create("no_tags", Material.FIRE);
+        if(itemTags.size()==0) return null;
 
         int numberOfTags = itemTags.size();
-        int filterIndex = filterTypes.getLvl();
+        int filterIndex = filterTypes.getLvl()/2;
 
         if(filterIndex < 0) return CustomTag.Create("non_valid", Material.FIRE);
 

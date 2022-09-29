@@ -6,7 +6,6 @@ import org.bukkit.Server;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.Hopper;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -16,9 +15,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,38 +55,33 @@ public final class HopperFilter extends JavaPlugin implements Listener {
 
         //Get the filters that are attached to the hopper
         ItemStack item = event.getItem();
-        if(item.getType().equals(Material.GOLDEN_SHOVEL))
-        {
-            int i = 0;
-        }
 
         Filter filter = FilterLogic.getFilters(block);
 
         //Checking if the item is allowed in the filter, if not moving the item will be cancelled.
         boolean isAllowed = filter.isItemAllowedInHopper(item);
         event.setCancelled(!isAllowed);
-        if (event.isCancelled()) return;
+        if (!event.isCancelled()) return;
 
-//        //Checking the rest of the items in the initiating inventory. If an item has no space in the destination
-//        //inventory it is rejected and
-//        Inventory initiator = event.getInitiator();
-//        Inventory receiver = event.getDestination();
-//        ItemStack[] sourceInventory = initiator.getContents();
-//
-//        for (ItemStack inventoryItem:sourceInventory) {
-//            if(inventoryItem == null) continue;
-//            if(filter.isItemAllowedInHopper(inventoryItem)){
-//
-//                HashMap<Integer, ItemStack> rejected = receiver.addItem(inventoryItem.clone());
-//
-//                if(rejected.isEmpty()){
-//                    initiator.remove(inventoryItem);
-//                    continue;
-//                }
-//                int leftover = inventoryItem.getAmount()-rejected.get(0).getAmount();
-//                inventoryItem.setAmount(leftover);
-//            }
-//        }
+         //Checking the rest of the items in the initiating inventory. If an item has no space in the destination
+        //inventory it is rejected and
+        Inventory chest  = event.getSource();
+        Inventory receiver = event.getDestination();
+        ItemStack[] sourceInventory = chest.getContents();
+
+        for (ItemStack inventoryItem:sourceInventory) {
+            if(inventoryItem == null) continue;
+            if (!filter.isItemAllowedInHopper(inventoryItem)) continue;
+
+            HashMap<Integer, ItemStack> rejected = receiver.addItem(inventoryItem.clone());
+
+            if(rejected.isEmpty()){
+                chest.remove(inventoryItem);
+                continue;
+            }
+            int leftover = inventoryItem.getAmount()-rejected.get(0).getAmount();
+            inventoryItem.setAmount(leftover);
+        }
     }
 
     @EventHandler
@@ -105,10 +101,8 @@ public final class HopperFilter extends JavaPlugin implements Listener {
     @EventHandler
     public void itemFrameInteract(PlayerInteractEntityEvent event) {
         if (event.isCancelled()) return;
-        if (!event.getRightClicked().getType().equals(EntityType.ITEM_FRAME)) return;
+        if(!(event.getRightClicked() instanceof ItemFrame itemFrame)) return;
 
-
-        ItemFrame itemFrame = (ItemFrame) event.getRightClicked();
         Block attachedBlock = itemFrame.getLocation().getBlock().getRelative(itemFrame.getAttachedFace());
         if (!(attachedBlock.getState() instanceof Hopper)) return;
         Rotation rotation = itemFrame.getRotation();

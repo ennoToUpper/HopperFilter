@@ -122,7 +122,7 @@ public final class HopperFilter extends JavaPlugin implements Listener {
             item = event.getPlayer().getInventory().getItemInMainHand();
         }
 
-        List<Tag<Material>> itemTags = FilterUtility.GetAllTags(item);
+        List<Tag<Material>> itemTags = ItemTagUtility.getItemTags(item);
 
         if(puttingItemInFrame) {
             String initialMessage = "Filters available: ";
@@ -130,7 +130,17 @@ public final class HopperFilter extends JavaPlugin implements Listener {
         }
 
         boolean isGlowFrame = itemFrame instanceof GlowItemFrame;
-        int tagIndex = FilterLogic.GetFilterType(rotation).getLvl();
-        MessageUtility.SendMessage(player, tagIndex, itemTags, !isGlowFrame);
+        int tagIndex = FilterUtility.GetFilterType(rotation);
+        Tag<Material> tag = FilterUtility.GetTagByIndex(itemTags, tagIndex);
+        HandleFrameReset(tag, itemFrame);
+
+        MessageUtility.SendMessage(player, tag, !isGlowFrame);
+    }
+
+    private void HandleFrameReset(Tag<Material> tag, ItemFrame itemFrame) {
+        if(tag == null)
+        {
+            itemFrame.setRotation(Rotation.NONE);
+        }
     }
 }

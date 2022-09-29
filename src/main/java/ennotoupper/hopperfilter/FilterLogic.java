@@ -1,7 +1,6 @@
 package ennotoupper.hopperfilter;
 
 import org.bukkit.Material;
-import org.bukkit.Rotation;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.GlowItemFrame;
@@ -31,32 +30,16 @@ public class FilterLogic {
 
             Block attachedBlock = getBlock(frame);
             if (block.equals(attachedBlock)) {
-                FilterTypes filterSetting = GetFilterType(frame.getRotation());
+                FilterTypes filterSetting = FilterUtility.getFilterTypes(frame.getRotation());
                 filter.AddSetting(filterSetting, item, entity instanceof GlowItemFrame);
             }
         }
-
-
         return filter;
     }
 
     @NotNull
     private static Block getBlock(ItemFrame frame) {
         return frame.getLocation().getBlock().getRelative(frame.getAttachedFace());
-    }
-
-    protected static FilterTypes GetFilterType(Rotation rotation)
-    {
-        return switch (rotation) {
-            case NONE -> FilterTypes.NORTH;
-            case CLOCKWISE_45 -> FilterTypes.NORTH_EAST;
-            case CLOCKWISE -> FilterTypes.EAST;
-            case CLOCKWISE_135 -> FilterTypes.SOUTH_EAST;
-            case FLIPPED -> FilterTypes.SOUTH;
-            case FLIPPED_45 -> FilterTypes.SOUTH_WEST;
-            case COUNTER_CLOCKWISE -> FilterTypes.WEST;
-            case COUNTER_CLOCKWISE_45 -> FilterTypes.NORTH_WEST;
-        };
     }
 
 }

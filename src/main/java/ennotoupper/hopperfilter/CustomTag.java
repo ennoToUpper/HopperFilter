@@ -45,20 +45,9 @@ public class CustomTag implements Tag<Material> {
     public boolean isTagged(@NotNull Material item) {
         if(GroupTag)
         {
-            for (Tag<Material> tag : tags)
-            {
-                if(tag.isTagged(item)) return true;
-            }
+            return tags.stream().anyMatch(tag -> tag.isTagged(item));
         }
-        else
-        {
-            for (Material material : materials)
-            {
-                if (item.equals(material)) return true;
-            }
-        }
-
-        return false;
+        return materials.stream().anyMatch(item::equals);
     }
 
     @Override

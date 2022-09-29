@@ -21,13 +21,8 @@ public class MessageUtility {
     public static final String ITEM_ALLOWED = ChatColor.GREEN + "Accepting: ";
     public static final String ITEM_REJECTED = ChatColor.RED + "Rejecting: ";
 
-    public static void SendMessage(Player player, int tagIndex, List<Tag<Material>> itemTags, boolean allowed) {
-        tagIndex /= 2;
-        if (tagIndex > itemTags.size()-1) return;
-
+    public static void SendMessage(Player player, Tag<Material> tag, boolean allowed) {
         String message = allowed ? ITEM_ALLOWED : ITEM_REJECTED;
-
-        Tag<Material> tag = itemTags.get(tagIndex);
         message = message + ChatColor.WHITE + ItemTagUtility.GetName(tag);
         player.sendMessage(message);
     }

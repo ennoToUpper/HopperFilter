@@ -16,7 +16,7 @@ public class Filter {
     {
         if(!isFilterSet()) return true;
 
-        List<Tag<Material>> tagFromItem = GetAllTags(item);
+        List<Tag<Material>> tagFromItem = ItemTagUtility.getItemTags(item);
 
         return CheckIfInFilters(tagFromItem);
     }

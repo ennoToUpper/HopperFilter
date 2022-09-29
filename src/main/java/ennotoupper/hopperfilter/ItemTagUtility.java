@@ -60,14 +60,6 @@ public class ItemTagUtility {
         tags.putAll(CustomTagFactory.GetTags());
     }
 
-
-    public static boolean isSimilarTag(ItemStack is1, ItemStack is2){
-        for (Tag<Material> tag : tags.keySet()) {
-            if (tag.isTagged(is1.getType()) && tag.isTagged(is2.getType())) return true;
-        }
-        return false;
-    }
-
     public static List<Tag<Material>> getItemTags(ItemStack itemStack)
     {
         Material material = itemStack.getType();
@@ -76,21 +68,17 @@ public class ItemTagUtility {
 
     protected static List<Tag<Material>> getItemTagsByMaterial(Material type)
     {
+        if(!tags.containsValue(type.name()))
+        {
+            tags.put(CustomTag.CreateByType(type), type.name());
+        }
         return compareTags(type, tags.keySet());
     }
 
-    private static List<Tag<Material>> compareTags(Material type, Set<Tag<Material>> tags) {
+    private static List<Tag<Material>> compareTags(Material type, Set<Tag<Material>> tagSet) {
         List<Tag<Material>> itemTags = new ArrayList<>();
 
-        for (Tag<Material> tag : tags) {
-/*            if(tag instanceof CustomTag customTag){
-                if(customTag.GroupTag)
-                {
-                    Set<Tag<Material>> groupTags = customTag.getTags();
-                    itemTags.addAll(compareTags(type, groupTags));
-                    continue;
-                }
-            }*/
+        for (Tag<Material> tag : tagSet) {
             if (!tag.isTagged(type)) continue;
             itemTags.add(tag);
         }

@@ -109,23 +109,20 @@ public final class HopperFilter extends JavaPlugin implements Listener {
 
         boolean puttingItemInFrame = false;
         ItemStack item = itemFrame.getItem();
+        Player player = event.getPlayer();
 
-        //ItemFrame event acts weird, it returns the values of the itemFrame *before* the event. So we have to calculate what the next state will be.
+        //Calculating the rotation as it only gets updated after the event
         if (!itemFrame.getItem().getType().equals(Material.AIR)) {
             rotation = rotation.rotateClockwise();
         }
-        else
+        else //Checking if player is placing an item in the frame. If so it enables an overview for the available tags
         {
             Material itemInHand = event.getPlayer().getInventory().getItemInMainHand().getType();
-            event.getPlayer().sendMessage(itemInHand.toString());
-
             puttingItemInFrame = !itemInHand.equals(Material.AIR);
             item = event.getPlayer().getInventory().getItemInMainHand();
         }
 
         List<Tag<Material>> itemTags = FilterUtility.GetAllTags(item);
-
-        Player player = event.getPlayer();
 
         if(puttingItemInFrame) {
             String initialMessage = "Filters available: ";

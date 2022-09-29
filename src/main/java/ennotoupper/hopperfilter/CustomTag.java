@@ -37,6 +37,10 @@ public class CustomTag implements Tag<Material> {
         return new CustomTag(name, customTagsIn);
     }
 
+    public static CustomTag CreateByType(Material type) {
+        return new CustomTag(type.name(), type);
+    }
+
     @Override
     public boolean isTagged(@NotNull Material item) {
         if(GroupTag)

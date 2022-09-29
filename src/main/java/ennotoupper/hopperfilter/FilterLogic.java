@@ -7,6 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -27,14 +28,21 @@ public class FilterLogic {
 
             ItemStack item = frame.getItem();
             if (item.getType().equals(Material.AIR)) continue;
-            Block attachedBlock = frame.getLocation().getBlock().getRelative(frame.getAttachedFace());
 
+            Block attachedBlock = getBlock(frame);
             if (block.equals(attachedBlock)) {
                 FilterTypes filterSetting = GetFilterType(frame.getRotation());
                 filter.AddSetting(filterSetting, item, entity instanceof GlowItemFrame);
             }
         }
+
+
         return filter;
+    }
+
+    @NotNull
+    private static Block getBlock(ItemFrame frame) {
+        return frame.getLocation().getBlock().getRelative(frame.getAttachedFace());
     }
 
     protected static FilterTypes GetFilterType(Rotation rotation)

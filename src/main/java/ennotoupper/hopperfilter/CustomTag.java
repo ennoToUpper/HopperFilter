@@ -25,7 +25,7 @@ public class CustomTag implements Tag<Material> {
         return new CustomTag(name, customTagsIn);
     }
 
-    private CustomTag(String name, CustomTag... customTagsIn)
+    private CustomTag(String name, Tag<Material>... customTagsIn)
     {
         this.name = name.toLowerCase();
         tags = new HashSet<>(customTagsIn.length);
@@ -33,7 +33,7 @@ public class CustomTag implements Tag<Material> {
         GroupTag = true;
     }
 
-    public static CustomTag CreateGroupTag(String name, CustomTag... customTagsIn) {
+    public static CustomTag CreateGroupTag(String name, Tag<Material>... customTagsIn) {
         return new CustomTag(name, customTagsIn);
     }
 
